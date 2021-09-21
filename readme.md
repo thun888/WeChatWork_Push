@@ -59,7 +59,7 @@ Get  http(s)://yourdomain/push/推送内容
 
 #### Todo
 
-- [ ] 支持post
+- [ ] 支持post方式
 - [ ] 支持密码校验
 - [ ] 优化推送界面
 
