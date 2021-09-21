@@ -34,7 +34,7 @@
 
 #### 请求方式
 
-http(s)://yourdomain/push/推送内容
+Get  http(s)://yourdomain/push/推送内容
 
 ![image-20210920152750949](https://asstes.thun888.xyz/file/pic-bed/2021/09/0ae4b1b58ff1d25b18cae99b11232505.png)
 
