@@ -19,15 +19,19 @@ async function handleRequest(request) {
 
     if (pathname.startsWith('/push') & request.method === "POST") {
         let req = await request.json()
-        var title = req["title"]
         var description = req["desp"]
-        if (description.length <= 60 & title === undefined) {
+        if (req["title"].length > 20) {
+            var title = req["title"].substring(0, 21) + "..."
+        } else {
+            var title = req["title"]
+        }
+        if (description.length <= 150 & title === undefined) {
             const post = await postit(post_url, description)
             errcode = post["errcode"]
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"未知错误","tx_errcode":"` + errcode + `"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
             }
         } else {
             var random_key = await save_text(save)
@@ -36,7 +40,7 @@ async function handleRequest(request) {
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"请检查kv设置","kv_errcode":"` + errcode + `"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
             }
         }
 
@@ -44,15 +48,19 @@ async function handleRequest(request) {
         const { search } = new URL(request.url);
 
         const req = await GetRequest(search)
-        const title = req.title
         const description = req.desp
-        if (description.length <= 60 & title === undefined) {
+        if (req.title.length > 20) {
+            var title = req.title.substring(0, 21) + "..."
+        } else {
+            var title = req.title
+        }
+        if (description.length <= 150 & title === undefined) {
             const post = await postit(post_url, description)
             errcode = post["errcode"]
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"未知错误"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
             }
         } else {
             var random_key = await save_text(description)
@@ -61,7 +69,7 @@ async function handleRequest(request) {
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"请检查设置","errcode":"` + errcode + `"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
             }
         }
 
