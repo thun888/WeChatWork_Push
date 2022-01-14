@@ -37,10 +37,10 @@
             <div>
                 <div class="mdui-card">
                     <div class="mdui-card-content mdui-text-center">
-                        <h2>title</h2>
+                        <h2>${title}</h2>
                     </div>
                     <div style="width:90%; word-wrap: break-word;word-break: normal;" class="mdui-center">
-                        <p class="lead">${value}</p>
+                        <p class="lead">${description}</p>
                     </div>
                 </div>
             </div>
@@ -72,7 +72,32 @@
         <p>Powered by CFW&amp;企业微信API</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/thun888/WxWork_Push@v0.0.3/push.js"></script>
+    <script>
+        var drawer = new mdui.Drawer('#drawer');
+        document.getElementById('toggle').addEventListener('click', function() {
+            drawer.toggle();
+        });
+
+        function del() {
+            var getkey = window.location.href.split('#')[0]
+            var key = getkey.substring(getkey.length - 6)
+            var url = location.origin + "/api/del"
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.open('POST', url, true);
+            httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            httpRequest.send('key=' + key);
+            httpRequest.onreadystatechange = function() {
+                if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    var json = httpRequest.responseText;
+                    console.log(json);
+                    mdui.snackbar({
+                        message: 'OK'
+                    });
+                    location.reload();
+                }
+            };
+        }
+    </script>
 </body>
 
 </html>
