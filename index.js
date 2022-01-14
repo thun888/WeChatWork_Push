@@ -65,7 +65,7 @@ async function handleRequest(request) {
             }
         }
 
-        if (title != undefined) {
+        if (req.title != undefined) {
             if (req.title.length > 20) {
                 var title = req.title.substring(0, 21) + "..."
             } else {
