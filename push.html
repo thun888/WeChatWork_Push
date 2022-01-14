@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>WXPush</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css" />
+    <style>
+        body {
+            --bg: url("https://cdn.jsdelivr.net/gh/thun888/tuku@master/img/background.bc725154.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            background-image: var(--bg);
+        }
+        
+        .mdui-shadow-3 {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+
+
+
+<body class="mdui-appbar-with-toolbar">
+    <div class="mdui-appbar mdui-appbar-fixed">
+        <div class="mdui-toolbar mdui-color-blue-grey-100">
+            <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white" id="toggle"><i class="mdui-icon material-icons">menu</i></span>
+            <a href="javascript:;" class="mdui-typo-headline">Push</a>
+            <div class="mdui-toolbar-spacer"></div>
+        </div>
+    </div>
+
+    <!--卡片-->
+    <div class="mdui-container">
+        <div class="mdui-row">
+            <div>
+                <div class="mdui-card">
+                    <div class="mdui-card-content mdui-text-center">
+                        <h2>title</h2>
+                    </div>
+                    <div style="width:90%; word-wrap: break-word;word-break: normal;" class="mdui-center">
+                        <p class="lead">${value}</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="mdui-drawer mdui-drawer-close mdui-color-blue-grey-100" id="drawer">
+                <ul class="mdui-list">
+
+                    <li class="mdui-subheader">Manage</li>
+                    <li class="mdui-list-item mdui-ripple">
+                        <i class="mdui-list-item-icon mdui-icon material-icons">delete_forever</i>
+                        <a href="javascript:del();" class="mdui-list-item-content">Delete</a>
+                    </li>
+
+
+                    <li class="mdui-subheader">Others</li>
+                    <li class="mdui-list-item mdui-ripple">
+                        <i class="mdui-list-item-icon mdui-icon material-icons">bookmark</i>
+                        <a href="https://github.com/thun888/WxWork_Push/" class="mdui-list-item-content">Github</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="footer" style="position:fixed;width: 100%;text-align: center;bottom: 0px;display: block;">
+        <p>Page By <a href="https://blog.thun888.xyz/">Thun888</a></p>
+        <p>Powered by CFW&amp;企业微信API</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/thun888/WxWork_Push@v0.0.3/push.js"></script>
+</body>
+
+</html>

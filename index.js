@@ -2,8 +2,8 @@ addEventListener("fetch", event => {
     event.respondWith(handleRequest(event.request))
 })
 
-/* WxWork_Push v0.0.2 */
-/* By thun888 22/1/13 */
+/* WxWork_Push v0.0.3 */
+/* By thun888 22/1/14 */
 
 async function handleRequest(request) {
     const { pathname } = new URL(request.url);
@@ -11,7 +11,7 @@ async function handleRequest(request) {
     const token = await JSON.parse(await (await fetch(token_url, getit)).text())
     const post_url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token.access_token;
     if (token["errcode"] != 0) {
-        return new Response(`{"status":500,"msg":"请检查变量设置","tx_errcode":"` + token["errcode"] + `"}`)
+        return new Response(`{"status":500,"msg":"请检查变量设置","tx_errcode":"` + token["errcode"] + `"}`, { status: 500 })
     }
 
 
@@ -20,6 +20,12 @@ async function handleRequest(request) {
     if (pathname.startsWith('/push') & request.method === "POST") {
         let req = await request.json()
         var description = req["desp"]
+        var req_pass = req["pass"]
+        if (password) {
+            if (req_pass != password) {
+                return new Response(`{"status":401,"msg":"Unauthorized"}`, { status: 401 })
+            }
+        }
         if (req["title"].length > 20) {
             var title = req["title"].substring(0, 21) + "..."
         } else {
@@ -31,28 +37,40 @@ async function handleRequest(request) {
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`, { status: 500 })
             }
         } else {
-            var random_key = await save_text(save)
+            if (title === undefined) {
+                var title = "设备通知"
+            }
+            var random_key = await save_text(description, title)
             const post = await postit(post_url, description, random_key, title)
             errcode = post["errcode"]
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`, { status: 500 })
             }
         }
 
-    } else if (pathname.startsWith('/push') & request.method === "GET") {
+    }
+    if (pathname.startsWith('/push') & request.method === "GET") {
         const { search } = new URL(request.url);
-
         const req = await GetRequest(search)
         const description = req.desp
-        if (req.title.length > 20) {
-            var title = req.title.substring(0, 21) + "..."
-        } else {
-            var title = req.title
+        var req_pass = req.pass
+        if (password) {
+            if (req_pass != password) {
+                return new Response(`{"status":401,"msg":"Unauthorized"}`, { status: 401 })
+            }
+        }
+
+        if (title != undefined) {
+            if (req.title.length > 20) {
+                var title = req.title.substring(0, 21) + "..."
+            } else {
+                var title = req.title
+            }
         }
         if (description.length <= 150 & title === undefined) {
             const post = await postit(post_url, description)
@@ -60,16 +78,19 @@ async function handleRequest(request) {
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`, { status: 500 })
             }
         } else {
-            var random_key = await save_text(description)
+            if (title === undefined) {
+                var title = "设备通知"
+            }
+            var random_key = await save_text(description, title)
             const post = await postit(post_url, description, random_key, title)
             errcode = post["errcode"]
             if (errcode == 0) {
                 return new Response(`{"status":200,"msg":"ok"}`)
             } else {
-                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`)
+                return new Response(`{"status":500,"msg":"` + post["errmsg"] + `"}`, { status: 500 })
             }
         }
 
@@ -78,7 +99,7 @@ async function handleRequest(request) {
     if (pathname.startsWith('/get/')) { //页面
         var save = pathname.slice(5)
         console.log(save)
-        const value = await PUSHSAVE.get(save)
+        const value = JSON.parse(await PUSHSAVE.get(save))
         if (value === null) {
             return new Response(html404, {
                 headers: {
@@ -87,37 +108,104 @@ async function handleRequest(request) {
                 status: 404
             })
         } else {
+            var title = value["t"]
+            var description = value["d"]
             const web = `
-  <html>
-      <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
-          <style>
-              div {
-                  word-wrap: break-word;
-                  word-break: normal;
-              }
-          </style>
-      </head>
-      <body>
-          <div class="jumbotron">
-              <h1 class="display-4">设备通知</h1>
-              <p class="lead">${value}</p>
-              <hr class="my-5">
-              <p>看完了吗，看完了就走吧👀</p>
-              <a class="btn btn-primary btn-lg" href="#" role="button" onclick="window.close();">(^///^)</a>
-            </div>
-        <div id="footer" style="position:fixed;width: 100%;text-align: center;bottom: 0px;display: block;">
-            <p>Page By <a href="https://blog.thun888.xyz/">Thun888</a></p>
-            <p>Powered by CloudFlare&amp;企业微信API</p>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>WXPush</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css" />
+    <style>
+        body {
+            --bg: url("https://cdn.jsdelivr.net/gh/thun888/tuku@master/img/background.bc725154.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            background-image: var(--bg);
+        }
+        
+        .mdui-shadow-3 {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+
+
+
+<body class="mdui-appbar-with-toolbar">
+    <div class="mdui-appbar mdui-appbar-fixed">
+        <div class="mdui-toolbar mdui-color-blue-grey-100">
+            <span class="mdui-btn mdui-btn-icon mdui-ripple mdui-ripple-white" id="toggle"><i class="mdui-icon material-icons">menu</i></span>
+            <a href="javascript:;" class="mdui-typo-headline">Push</a>
+            <div class="mdui-toolbar-spacer"></div>
         </div>
-      </body>
-  </html>`
+    </div>
+
+    <!--卡片-->
+    <div class="mdui-container">
+        <div class="mdui-row">
+            <div>
+                <div class="mdui-card">
+                    <div class="mdui-card-content mdui-text-center">
+                        <h2>title</h2>
+                    </div>
+                    <div style="width:90%; word-wrap: break-word;word-break: normal;" class="mdui-center">
+                        <p class="lead">${value}</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="mdui-drawer mdui-drawer-close mdui-color-blue-grey-100" id="drawer">
+                <ul class="mdui-list">
+
+                    <li class="mdui-subheader">Manage</li>
+                    <li class="mdui-list-item mdui-ripple">
+                        <i class="mdui-list-item-icon mdui-icon material-icons">delete_forever</i>
+                        <a href="javascript:del();" class="mdui-list-item-content">Delete</a>
+                    </li>
+
+
+                    <li class="mdui-subheader">Others</li>
+                    <li class="mdui-list-item mdui-ripple">
+                        <i class="mdui-list-item-icon mdui-icon material-icons">bookmark</i>
+                        <a href="https://github.com/thun888/WxWork_Push/" class="mdui-list-item-content">Github</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="footer" style="position:fixed;width: 100%;text-align: center;bottom: 0px;display: block;">
+        <p>Page By <a href="https://blog.thun888.xyz/">Thun888</a></p>
+        <p>Powered by CFW&amp;企业微信API</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/thun888/WxWork_Push@v0.0.3/push.js"></script>
+</body>
+
+</html>`
 
             return new Response(web, {
                 headers: { "content-type": "text/html;charset=UTF-8" }
             })
         }
+    }
+    if (pathname.startsWith('/api/del') & request.method === "POST") {
+        let req = await request.json()
+        var key = req["key"]
+        var status = await PUSHSAVE.delete(key)
+        return new Response(status, {
+            headers: {
+                "content-type": "text/html;charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST",
+            },
+            status: 200
+        })
     } else {
         return new Response(roothtml, {
             headers: {
@@ -130,14 +218,16 @@ async function handleRequest(request) {
 
 
 //存档
-async function save_text(TEXT) {
+async function save_text(TEXT, title) {
     let random_key = await randomString()
     let is_exist = await PUSHSAVE.get(random_key)
     console.log(is_exist)
     if (is_exist == null) {
-        return await PUSHSAVE.put(random_key, TEXT), random_key
+        var json = { t: title, d: TEXT }
+        return await PUSHSAVE.put(random_key, JSON.stringify(json)), random_key
     } else {
-        save_text(TEXT)
+        console.log("luckydog")
+        save_text(TEXT, title)
     }
 }
 
