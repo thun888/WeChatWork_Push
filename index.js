@@ -26,11 +26,14 @@ async function handleRequest(request) {
                 return new Response(`{"status":401,"msg":"Unauthorized"}`, { status: 401 })
             }
         }
-        if (req["title"].length > 20) {
-            var title = req["title"].substring(0, 21) + "..."
-        } else {
-            var title = req["title"]
+        if (req["title"]){
+            if (req["title"].length > 20) {
+                var title = req["title"].substring(0, 21) + "..."
+            } else {
+                var title = req["title"]
+            }
         }
+
         if (description.length <= 150 & title === undefined) {
             const post = await postit(post_url, description)
             errcode = post["errcode"]
@@ -116,10 +119,10 @@ async function handleRequest(request) {
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width">
                 <title>WXPush</title>
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/css/mdui.min.css" />
+                <link rel="stylesheet" href="https://jsd.hzchu.top/npm/mdui@1.0.1/dist/css/mdui.min.css" />
                 <style>
                     body {
-                        --bg: url("https://cdn.jsdelivr.net/gh/thun888/tuku@master/img/background.bc725154.png");
+                        --bg: url("https://jsd.hzchu.top/gh/thun888/tuku@master/img/background.bc725154.png");
                         background-repeat: no-repeat;
                         background-size: cover;
                         background-attachment: fixed;
@@ -180,10 +183,10 @@ async function handleRequest(request) {
                     </div>
                 </div>
                 <div id="footer" style="position:fixed;width: 100%;text-align: center;bottom: 0px;display: block;">
-                    <p>Page By <a href="https://blog.thun888.xyz/">Thun888</a></p>
+                    <p>Maded By <a href="https://blog.hzchu.top/">Thun888</a></p>
                     <p>Powered by CFW&amp;企业微信API</p>
                 </div>
-                <script src="https://cdn.jsdelivr.net/npm/mdui@1.0.1/dist/js/mdui.min.js"></script>
+                <script src="https://jsd.hzchu.top/npm/mdui@1.0.1/dist/js/mdui.min.js"></script>
                 <script>
                 var drawer = new mdui.Drawer('#drawer');
                 document.getElementById('toggle').addEventListener('click', function() {
@@ -233,15 +236,16 @@ async function handleRequest(request) {
             },
             status: 200
         })
-    } else {
-        return new Response(roothtml, {
-            headers: {
-                "content-type": "text/html;charset=UTF-8",
-            },
-            status: 404
-        })
     }
+
+    return new Response(roothtml, {
+        headers: {
+            "content-type": "text/html;charset=UTF-8",
+        },
+        status: 404
+    })
 }
+
 
 
 //存档
