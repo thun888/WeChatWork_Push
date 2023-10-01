@@ -2,6 +2,13 @@
 
 顾名思义，一个利用企业微信进行消息推送的程序
 
+#### 例子
+
+在使用短信转发器上使用
+
+![image](https://github.com/thun888/WeChatWork_Push/assets/63234268/d64f33fd-05b7-4e2f-9bf7-9b1fa3253a1e)
+
+
 #### 使用方式
 
 1. 准备个Cloudflare账号
