@@ -30,15 +30,15 @@
 | weburl     | 部署完成后的域名                |
 | password | 密码（可选） |
 
-4. 注册一个企业以获取以上变量，可以参考[Server酱·Turbo版 (ftqq.com)](https://sct.ftqq.com/forward)（[网页截图](https://asstes.thun888.xyz/file/pic-bed/2021/09/4f4633a0b5f843a17263289553a5976e.png)）
+4. 注册一个企业以获取以上变量，可以参考[Server酱·Turbo版 (ftqq.com)](https://sct.ftqq.com/forward)（[网页截图](https://asstes.hzchu.top/file/pic-bed/2021/09/4f4633a0b5f843a17263289553a5976e.png)）
 
 5. 在cf中新建一个kv存储，名称随意
 
-   ![image-20210920152306663](https://asstes.thun888.xyz/file/pic-bed/2021/09/1394e65f6d88e8363afbbd208b519e69.png)
+   ![image-20210920152306663](https://asstes.hzchu.top/file/pic-bed/2021/09/1394e65f6d88e8363afbbd208b519e69.png)
 
 6. 在worker详情中绑定kv，确保**变量名称**为**PUSHSAVE**
 
-   ![image-20210920152429290](https://asstes.thun888.xyz/file/pic-bed/2021/09/c7d3f9825cac0f9b3fad72a98dd29e21.png)
+   ![image-20210920152429290](https://asstes.hzchu.top/file/pic-bed/2021/09/c7d3f9825cac0f9b3fad72a98dd29e21.png)
 
 
 #### 请求方式
